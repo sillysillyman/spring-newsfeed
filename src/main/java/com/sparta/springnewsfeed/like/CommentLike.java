@@ -4,6 +4,7 @@ import com.sparta.springnewsfeed.comment.Comment;
 import com.sparta.springnewsfeed.nomal.Timestamped;
 import com.sparta.springnewsfeed.user.User;
 import jakarta.persistence.*;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,3 +27,4 @@ public class CommentLike extends Timestamped {
     @JoinColumn(name = "comment_id", nullable = false)
     private Comment comment;
 }
+

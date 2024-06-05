@@ -1,9 +1,8 @@
-package com.sparta.springnewsfeed.service;
+package com.sparta.springnewsfeed.like;
 
-import com.sparta.springnewsfeed.dto.HttpStatusResponseDto;
-import com.sparta.springnewsfeed.entity.LikeId;
-import com.sparta.springnewsfeed.entity.PostLike;
-import com.sparta.springnewsfeed.repository.PostLikeRepository;
+import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
+import com.sparta.springnewsfeed.post.Post;
+import com.sparta.springnewsfeed.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,10 +12,16 @@ import org.springframework.stereotype.Service;
 public class PostLikeService {
 
     private final PostLikeRepository postLikeRepository;
+    private final PostRepository postRepository;
 
     // 게시글 좋아요 등록
     public HttpStatusResponseDto doLike(Long postId, Long userId) {
         // 예외 0) postId, userId가 유효한지 확인 (등록되어있는 postId, userId인지 확인)
+        Post post = postRepository.findById(postId).orElse(null);
+        if (post == null) {
+            return new HttpStatusResponseDto(HttpStatus.BAD_REQUEST.toString(), "유효하지 않은 입력 값입니다.");
+        }
+
 
         PostLike postLike = postLikeRepository.findByIdUserIdAndIdPostId(userId, postId).orElse(null);
 
@@ -37,7 +42,7 @@ public class PostLikeService {
         //}
 
 
-        postLikeRepository.save(new PostLike(new LikeId(userId, postId)));
+        postLikeRepository.save(new PostLike(new LikeId(userId, postId), post));
         return new HttpStatusResponseDto(HttpStatus.OK.toString(), "요청이 성공했습니다.");
     }
 

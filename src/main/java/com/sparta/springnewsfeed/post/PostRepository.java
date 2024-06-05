@@ -1,6 +1,5 @@
-package com.sparta.springnewsfeed.repository;
+package com.sparta.springnewsfeed.post;
 
-import com.sparta.springnewsfeed.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

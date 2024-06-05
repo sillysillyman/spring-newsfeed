@@ -1,9 +1,6 @@
-package com.sparta.springnewsfeed.service;
+package com.sparta.springnewsfeed.like;
 
-import com.sparta.springnewsfeed.dto.HttpStatusResponseDto;
-import com.sparta.springnewsfeed.entity.CommentLike;
-import com.sparta.springnewsfeed.entity.LikeId;
-import com.sparta.springnewsfeed.repository.CommentLikeRepository;
+import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

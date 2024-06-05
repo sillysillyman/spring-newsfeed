@@ -1,6 +1,5 @@
-package com.sparta.springnewsfeed.service;
+package com.sparta.springnewsfeed.post;
 
-import com.sparta.springnewsfeed.repository.PostRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

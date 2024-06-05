@@ -1,7 +1,6 @@
-package com.sparta.springnewsfeed.controller;
+package com.sparta.springnewsfeed.like;
 
-import com.sparta.springnewsfeed.dto.HttpStatusResponseDto;
-import com.sparta.springnewsfeed.service.CommentLikeService;
+import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -1,7 +1,5 @@
-package com.sparta.springnewsfeed.repository;
+package com.sparta.springnewsfeed.like;
 
-import com.sparta.springnewsfeed.entity.CommentLike;
-import com.sparta.springnewsfeed.entity.LikeId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

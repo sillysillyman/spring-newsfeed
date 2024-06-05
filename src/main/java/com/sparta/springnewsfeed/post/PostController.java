@@ -1,6 +1,5 @@
-package com.sparta.springnewsfeed.controller;
+package com.sparta.springnewsfeed.post;
 
-import com.sparta.springnewsfeed.service.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 

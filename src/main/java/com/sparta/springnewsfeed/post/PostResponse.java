@@ -1,6 +1,5 @@
-package com.sparta.springnewsfeed.dto;
+package com.sparta.springnewsfeed.post;
 
-import com.sparta.springnewsfeed.entity.Post;
 import lombok.Getter;
 
 @Getter

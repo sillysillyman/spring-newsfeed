@@ -1,4 +1,4 @@
-package com.sparta.springnewsfeed.like;
+package com.sparta.springnewsfeed.comment;
 
 import com.sparta.springnewsfeed.nomal.Timestamped;
 import com.sparta.springnewsfeed.post.Post;
@@ -12,11 +12,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "post_like")
-public class PostLike extends Timestamped {
+@Table(name = "comment")
+public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

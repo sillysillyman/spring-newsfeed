@@ -24,6 +24,7 @@ repositories {
 dependencies {
     // JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
     // MySQL
     runtimeOnly 'com.mysql:mysql-connector-j'
 
@@ -39,17 +40,20 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
-    // 타임리프
+    // Thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-    // 웹 서버
+    // Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // 롬복
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // 테스트
+    // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

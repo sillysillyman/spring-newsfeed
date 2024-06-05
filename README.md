@@ -91,18 +91,18 @@ Comment(1) ----------------- (N) CommentLike
 ```
 
 ### 공통 사용 코드
-| HTTP 상태 코드 | 오류 코드 | 메시지                   | 설명                  |
-|------------| ----- | --------------------- | ------------------- |
-| 200        | S001  | Success               | 요청이 성공했습니다.         |
-| 201        | S002  | Created               | 리소스가 성공적으로 생성되었습니다. |
-| 400        | C001  | Invalid input value   | 유효하지 않은 입력 값입니다.    |
-| 405        | C002  | Method not allowed    | 허용되지 않는 메서드입니다.     |
-| 404        | C003  | Entity not found      | 엔티티를 찾을 수 없습니다.     |
-| 500        | C004  | Internal server error | 내부 서버 오류입니다.        |
-| 400        | C005  | Invalid type value    | 유효하지 않은 타입 값입니다.    |
-| 403        | C006  | Access denied         | 접근이 거부되었습니다.        |
-| 401        | C007  | Unauthorized          | 인증이 필요합니다.          |
-| 409        | C008  | Duplicate entity      | 중복된 엔티티입니다.         |
+| HTTP 상태 코드 |  코드 | 메시지                   | 설명                  |
+|------------| --- | --------------------- | ------------------- |
+| 200        | S001 | Success               | 요청이 성공했습니다.         |
+| 201        | S002 | Created               | 리소스가 성공적으로 생성되었습니다. |
+| 400        | C001 | Invalid input value   | 유효하지 않은 입력 값입니다.    |
+| 405        | C002 | Method not allowed    | 허용되지 않는 메서드입니다.     |
+| 404        | C003 | Entity not found      | 엔티티를 찾을 수 없습니다.     |
+| 500        | C004 | Internal server error | 내부 서버 오류입니다.        |
+| 400        | C005 | Invalid type value    | 유효하지 않은 타입 값입니다.    |
+| 403        | C006 | Access denied         | 접근이 거부되었습니다.        |
+| 401        | C007 | Unauthorized          | 인증이 필요합니다.          |
+| 409        | C008 | Duplicate entity      | 중복된 엔티티입니다.         |
 
 ### API 명세서
 

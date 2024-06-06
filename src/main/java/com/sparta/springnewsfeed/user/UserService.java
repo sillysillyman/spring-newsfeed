@@ -23,12 +23,12 @@ public class UserService {
 
         // 중복된 사용자 확인
         if (userRepository.existsByUserid(userid)) {
-            return ResponseCode.DUPLICATE_ENTITY;
+            throw new IllegalArgumentException(ResponseCode.DUPLICATE_ENTITY.getMessage());
         }
 
         // 탈퇴한 사용자 확인
         if (userRepository.existsByUseridAndStatus(userid, UserStatusEnum.DELETED)) {
-            return ResponseCode.INVALID_INPUT_VALUE;
+            throw new IllegalArgumentException(ResponseCode.INVALID_INPUT_VALUE.getMessage());
         }
 
         // 사용자 생성 및 저장

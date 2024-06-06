@@ -2,6 +2,7 @@ package com.sparta.springnewsfeed.user;
 
 import com.sparta.springnewsfeed.common.ResponseCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,10 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -31,10 +34,13 @@ public class UserService {
             throw new IllegalArgumentException(ResponseCode.INVALID_INPUT_VALUE.getMessage());
         }
 
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(password);
+
         // 사용자 생성 및 저장
         User user = new User();
         user.setUserid(userid);
-        user.setPassword(password);
+        user.setPassword(encodedPassword); // 암호화된 비밀번호 저장
         user.setEmail(email);
         user.setStatus(UserStatusEnum.UNVERIFIED); // 초기 상태를 UNVERIFIED로 설정
 

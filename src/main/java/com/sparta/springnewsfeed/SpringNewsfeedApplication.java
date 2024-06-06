@@ -12,5 +12,4 @@ public class SpringNewsfeedApplication {
     public static void main(String[] args) {
         SpringApplication.run(SpringNewsfeedApplication.class, args);
     }
-
 }

@@ -1,8 +1,8 @@
 package com.sparta.springnewsfeed.post;
 
 import com.sparta.springnewsfeed.comment.Comment;
+import com.sparta.springnewsfeed.common.Timestamped;
 import com.sparta.springnewsfeed.like.PostLike;
-import com.sparta.springnewsfeed.nomal.Timestamped;
 import com.sparta.springnewsfeed.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -22,9 +22,11 @@ public class Post extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 50)
+    private String title;
+
     @Column(nullable = false)
     private String content;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

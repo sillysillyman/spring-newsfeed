@@ -1,4 +1,4 @@
-package com.sparta.springnewsfeed.nomal;
+package com.sparta.springnewsfeed.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -46,8 +46,7 @@ dependencies {
     // Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // validation
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'

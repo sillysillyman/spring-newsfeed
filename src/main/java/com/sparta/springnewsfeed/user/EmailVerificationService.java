@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -28,20 +29,31 @@ public class EmailVerificationService {
 
     // 인증 코드를 생성하고 이메일로 전송하는 메서드
     @Transactional
-    public void createVerificationCode(User user) {
-        // 랜덤 인증 코드를 생성
+    public void createVerificationCode(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 가진 사용자를 찾을 수 없습니다."));
+
         String code = generateVerificationCode();
 
-        // 생성된 인증 코드를 사용하여 EmailVerification 객체를 생성하고 저장합
-        EmailVerification verification = new EmailVerification(user, code);
+        // 기존 인증 코드가 있는지 확인
+        Optional<EmailVerification> existingVerification = verificationRepository.findByUser(user);
+        EmailVerification verification;
+        if (existingVerification.isPresent()) {
+            // 기존 인증 코드가 있으면 업데이트
+            verification = existingVerification.get();
+            verification.setCode(code);
+            verification.setExpiryDate(LocalDateTime.now().plusMinutes(3)); // 180초간 유효
+        } else {
+            // 기존 인증 코드가 없으면 새로 생성
+            verification = new EmailVerification(user, code);
+        }
+
         verificationRepository.save(verification);
 
-        // 이메일 보내줄 메시지 설정
         String recipientAddress = user.getEmail();
         String subject = "이메일 인증";
         String message = "이메일 인증번호는 다음과 같습니다: " + code;
 
-        // 이메일 전송
         sendEmail(recipientAddress, subject, message);
     }
 

@@ -2,6 +2,7 @@ package com.sparta.springnewsfeed.post;
 
 import com.sparta.springnewsfeed.user.User;
 import com.sparta.springnewsfeed.user.UserRepository;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,5 +36,19 @@ public class PostService {
         Post updatedPost = postRepository.save(post);
 
         return new PostResponse(updatedPost);
+    }
+
+    @Transactional
+    public void deletePost(Long userId, Long postId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("사용자를 찾지 못 했습니다."));
+        Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new RuntimeException("게시물을 찾지 못 했습니다."));
+
+        if (!Objects.equals(post.getUser().getId(), user.getId())) {
+            throw new RuntimeException("게시물과 사용자가 일치하지 않습니다.");
+        }
+
+        postRepository.delete(post);
     }
 }

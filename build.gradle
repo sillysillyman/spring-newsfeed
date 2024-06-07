@@ -46,8 +46,8 @@ dependencies {
     // Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // Mail
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    // SendGrid
+    implementation 'com.sendgrid:sendgrid-java:4.7.1'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'

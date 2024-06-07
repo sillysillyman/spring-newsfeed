@@ -8,6 +8,9 @@ import lombok.Getter;
 public class PostRequest {
 
     @NotNull
+    private Long postId;
+
+    @NotNull
     private Long userId;
 
     @NotBlank

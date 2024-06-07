@@ -18,6 +18,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // 회원가입
     @Transactional
     public ResponseCode signup(SignupRequestDto requestDto) {
         String userid = requestDto.getUserid();
@@ -47,5 +48,22 @@ public class UserService {
         userRepository.save(user);
 
         return ResponseCode.CREATED;
+    }
+
+    // 로그인
+    public ResponseCode login(LoginRequestDto requestDto) {
+        User user = userRepository.findByUserid(requestDto.getUserid())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        if (user.getStatus() != UserStatusEnum.VERIFIED) {
+            // 이메일 인증이 완료되지 않은 경우 인증되지 않은 상태 코드 반환
+            return ResponseCode.UNAUTHORIZED;
+        }
+
+        return ResponseCode.SUCCESS;
     }
 }

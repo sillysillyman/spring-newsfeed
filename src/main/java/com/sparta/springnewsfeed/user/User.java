@@ -56,8 +56,9 @@ public class User extends Timestamped {
     private String refreshToken;
 
 
-
     // 엔티티 관계
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private EmailVerification emailVerification;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();

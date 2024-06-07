@@ -26,11 +26,24 @@ public class UserController {
         this.userService = userService;
     }
 
+    // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<HttpStatusResponseDto> signup(@Validated @RequestBody SignupRequestDto requestDto) {
         ResponseCode responseCode = userService.signup(requestDto);
         HttpStatusResponseDto response = new HttpStatusResponseDto(responseCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
+    }
+
+    // 로그인
+    @PostMapping("/login")
+    public ResponseEntity<HttpStatusResponseDto> login(@RequestBody LoginRequestDto requestDto) {
+        try {
+            ResponseCode responseCode = userService.login(requestDto);
+            HttpStatusResponseDto response = new HttpStatusResponseDto(responseCode);
+            return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
+        } catch (IllegalArgumentException e) {
+            return handleIllegalArgumentException(e);
+        }
     }
 
     // 유효성 검사 실패 예외 처리

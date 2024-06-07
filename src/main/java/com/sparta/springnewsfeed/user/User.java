@@ -3,7 +3,7 @@ package com.sparta.springnewsfeed.user;
 import com.sparta.springnewsfeed.comment.Comment;
 import com.sparta.springnewsfeed.like.CommentLike;
 import com.sparta.springnewsfeed.like.PostLike;
-import com.sparta.springnewsfeed.nomal.Timestamped;
+import com.sparta.springnewsfeed.common.Timestamped;
 import com.sparta.springnewsfeed.post.Post;
 import com.sparta.springnewsfeed.follow.Follow;
 import jakarta.persistence.*;
@@ -39,7 +39,7 @@ public class User extends Timestamped {
     @Column
     private String email;
 
-    @Column(nullable = false, unique = true)
+    @Column
     private String name;
 
     @Column

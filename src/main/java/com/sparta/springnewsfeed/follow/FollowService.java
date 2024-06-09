@@ -49,5 +49,27 @@ public class FollowService {
         return ResponseCode.SUCCESS;
     }
 
+    // 팔로우 취소
+    @Transactional
+    public ResponseCode unfollowUser(String followerUserid, String followedUserid) {
+        Optional<User> followerOptional = userRepository.findByUserid(followerUserid);
+        Optional<User> followedOptional = userRepository.findByUserid(followedUserid);
 
+        if (followerOptional.isEmpty() || followedOptional.isEmpty()) {
+            return ResponseCode.ENTITY_NOT_FOUND;
+        }
+
+        User follower = followerOptional.get();
+        User followed = followedOptional.get();
+
+        Optional<Follow> followOptional = followRepository.findByFollowerAndFollowed(follower, followed);
+
+        if (followOptional.isEmpty()) {
+            return ResponseCode.INVALID_INPUT_VALUE;
+        }
+
+        followRepository.delete(followOptional.get());
+
+        return ResponseCode.SUCCESS;
+    }
 }

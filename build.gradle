@@ -59,6 +59,11 @@ dependencies {
 
     // validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // AWS SDK for S3
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.252'
+    // Spring Cloud AWS Starter
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 tasks.named('test') {

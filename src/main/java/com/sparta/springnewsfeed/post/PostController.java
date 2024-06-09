@@ -3,6 +3,8 @@ package com.sparta.springnewsfeed.post;
 import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,5 +23,20 @@ public class PostController {
         @RequestBody @Valid PostRequest request) {
         request.setUserId(userId);
         return postService.createPost(request);
+    }
+
+    @GetMapping
+    public HttpStatusResponseDto getAllPosts() {
+        return postService.getAllPosts();
+    }
+
+    @GetMapping("/users/{userId}")
+    public HttpStatusResponseDto getPostsByUserId(@PathVariable Long userId) {
+        return postService.getPostsByUserId(userId);
+    }
+
+    @GetMapping("/users/{userId}/following")
+    public HttpStatusResponseDto getPostsOfFollowees(@PathVariable Long userId) {
+        return postService.getPostsOfFollowees(userId);
     }
 }

@@ -27,5 +27,12 @@ public class FollowController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
     }
 
-
+    // 팔로우 취소
+    @DeleteMapping("/{followerUserid}/unfollow/{followedUserid}")
+    public ResponseEntity<HttpStatusResponseDto> unfollowUser(
+            @PathVariable String followerUserid, @PathVariable String followedUserid) {
+        ResponseCode responseCode = followService.unfollowUser(followerUserid, followedUserid);
+        HttpStatusResponseDto response = new HttpStatusResponseDto(responseCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
+    }
 }

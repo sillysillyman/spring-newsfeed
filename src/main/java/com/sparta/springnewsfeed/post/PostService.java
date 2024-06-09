@@ -1,12 +1,14 @@
 package com.sparta.springnewsfeed.post;
 
+import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
+import com.sparta.springnewsfeed.common.ResponseCode;
 import com.sparta.springnewsfeed.follow.Follow;
 import com.sparta.springnewsfeed.user.User;
 import com.sparta.springnewsfeed.user.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,35 +21,50 @@ public class PostService {
     private final UserRepository userRepository;
 
     @Transactional
-    public PostResponse createPost(PostRequest request) {
-        User user = userRepository.findById(request.getUserId())
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+    public HttpStatusResponseDto createPost(PostRequest request) {
+        Optional<User> optionalUser = userRepository.findById(request.getUserId());
+        if (optionalUser.isEmpty()) {
+            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
 
         Post post = new Post(request.getTitle(), request.getContent(), user);
         Post savedPost = postRepository.save(post);
 
-        return new PostResponse(savedPost);
+        return new HttpStatusResponseDto(ResponseCode.CREATED, new PostResponse(savedPost));
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getAllPosts() {
-        return postRepository.findAll().stream().map(PostResponse::new)
-            .collect(Collectors.toList());
+    public HttpStatusResponseDto getAllPosts() {
+        List<PostResponse> posts = postRepository.findAll().stream().map(PostResponse::new)
+            .toList();
+        return new HttpStatusResponseDto(ResponseCode.SUCCESS, posts);
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getPostsByUserId(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+    public HttpStatusResponseDto getPostsByUserId(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
+        }
 
-        return postRepository.findByUser(user).stream().map(PostResponse::new)
-            .collect(Collectors.toList());
+        User user = optionalUser.get();
+
+        List<PostResponse> posts = postRepository.findByUser(user).stream().map(PostResponse::new)
+            .toList();
+
+        return new HttpStatusResponseDto(ResponseCode.SUCCESS, posts);
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getPostsOfFollowees(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+    public HttpStatusResponseDto getPostsOfFollowees(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
 
         List<Follow> followees = user.getFollowing();
         List<PostResponse> postResponses = new ArrayList<>();
@@ -59,33 +76,50 @@ public class PostService {
                 postResponses.add(new PostResponse(post));
             }
         }
-        return postResponses;
+        return new HttpStatusResponseDto(ResponseCode.SUCCESS, postResponses);
     }
 
     @Transactional
-    public PostResponse updatePost(PostRequest request) {
-        Post post = postRepository.findById(request.getPostId())
-            .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
+    public HttpStatusResponseDto updatePost(PostRequest request) {
+        Optional<Post> optionalPost = postRepository.findById(request.getPostId());
+        if (optionalPost.isEmpty()) {
+            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
+        }
+
+        Post post = optionalPost.get();
+
+        if (!post.getUser().getId().equals(request.getUserId())) {
+            return new HttpStatusResponseDto(ResponseCode.ACCESS_DENIED);
+        }
 
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
 
         Post updatedPost = postRepository.save(post);
 
-        return new PostResponse(updatedPost);
+        return new HttpStatusResponseDto(ResponseCode.SUCCESS, new PostResponse(updatedPost));
     }
 
     @Transactional
-    public void deletePost(Long userId, Long postId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
-        Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new RuntimeException("게시물을 찾을 수 없습니다."));
+    public HttpStatusResponseDto deletePost(Long userId, Long postId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
+        }
 
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isEmpty()) {
+            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
+        Post post = optionalPost.get();
         if (!Objects.equals(post.getUser().getId(), user.getId())) {
-            throw new RuntimeException("게시물과 사용자가 일치하지 않습니다.");
+            return new HttpStatusResponseDto(ResponseCode.ACCESS_DENIED);
         }
 
         postRepository.delete(post);
+
+        return new HttpStatusResponseDto(ResponseCode.SUCCESS);
     }
 }

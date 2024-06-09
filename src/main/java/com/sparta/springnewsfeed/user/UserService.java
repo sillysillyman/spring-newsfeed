@@ -122,4 +122,21 @@ public class UserService {
 
         return ResponseCode.SUCCESS;
     }
+
+    // 유저 조회
+    @Transactional(readOnly = true)
+    public UserInquiryResponseDto getUserProfile(String userid) {
+        User user = userRepository.findByUserid(userid)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        UserInquiryResponseDto responseDto = new UserInquiryResponseDto();
+        responseDto.setUserid(user.getUserid());
+        responseDto.setName(user.getName());
+        responseDto.setIntroduction(user.getIntroduction());
+        responseDto.setEmail(user.getEmail());
+        responseDto.setPictureURL(user.getPictureURL());
+
+        return responseDto;
+    }
+
 }

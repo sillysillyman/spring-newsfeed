@@ -64,6 +64,13 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
     }
 
+    // 사용자 프로필 조회
+    @GetMapping("/{userid}/inquiry")
+    public ResponseEntity<UserInquiryResponseDto> getUserProfile(@PathVariable String userid) {
+        UserInquiryResponseDto userProfile = userService.getUserProfile(userid);
+        return new ResponseEntity<>(userProfile, HttpStatus.OK);
+    }
+
     // 유효성 검사 실패 예외 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<HttpStatusResponseDto> handleValidationException(MethodArgumentNotValidException ex) {

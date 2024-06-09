@@ -1,22 +1,30 @@
 package com.sparta.springnewsfeed.user;
 
 import com.sparta.springnewsfeed.common.ResponseCode;
+import com.sparta.springnewsfeed.common.S3Uploader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final S3Uploader s3Uploader;
+
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, S3Uploader s3Uploader, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.s3Uploader = s3Uploader;
         this.passwordEncoder = passwordEncoder;
     }
+
 
     // 회원가입
     @Transactional
@@ -64,6 +72,34 @@ public class UserService {
             return ResponseCode.UNAUTHORIZED;
         }
 
+        return ResponseCode.SUCCESS;
+    }
+
+    // 프로필 수정
+    @Transactional
+    public ResponseCode updateProfile(UpdateProfileRequestDto requestDto, MultipartFile profilePicture, String userid) {
+        User user = userRepository.findByUserid(userid)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 이름과 한줄소개 업데이트
+        if (requestDto.getName() != null) {
+            user.setName(requestDto.getName());
+        }
+        if (requestDto.getIntroduction() != null) {
+            user.setIntroduction(requestDto.getIntroduction());
+        }
+
+        // 프로필 사진 업로드 및 URL 설정
+        if (profilePicture != null && !profilePicture.isEmpty()) {
+            try {
+                String profileImageUrl = s3Uploader.upload(profilePicture, "profile-pictures");
+                user.setPictureURL(profileImageUrl);
+            } catch (IOException e) {
+                throw new IllegalArgumentException("프로필 사진 업로드 중 오류가 발생했습니다.");
+            }
+        }
+
+        userRepository.save(user);
         return ResponseCode.SUCCESS;
     }
 }

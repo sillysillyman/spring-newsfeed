@@ -54,6 +54,16 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
     }
 
+    // 바밀번호 변경
+    @PutMapping("/{userid}/update-password")
+    public ResponseEntity<HttpStatusResponseDto> updatePassword(
+            @PathVariable String userid,
+            @Validated @RequestBody UpdatePasswordRequestDto requestDto) {
+        ResponseCode responseCode = userService.updatePassword(requestDto, userid);
+        HttpStatusResponseDto response = new HttpStatusResponseDto(responseCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
+    }
+
     // 유효성 검사 실패 예외 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<HttpStatusResponseDto> handleValidationException(MethodArgumentNotValidException ex) {

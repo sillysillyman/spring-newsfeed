@@ -11,4 +11,5 @@ public class UserInquiryResponseDto {
     private String name;
     private String introduction;
     private String email;
+    private String pictureURL;
 }

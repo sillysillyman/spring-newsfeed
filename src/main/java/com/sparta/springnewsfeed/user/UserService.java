@@ -102,4 +102,24 @@ public class UserService {
         userRepository.save(user);
         return ResponseCode.SUCCESS;
     }
+
+    // 비밀 번호 변경
+    @Transactional
+    public ResponseCode updatePassword(UpdatePasswordRequestDto requestDto, String userid) {
+        User user = userRepository.findByUserid(userid)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())) {
+            return ResponseCode.UNAUTHORIZED;
+        }
+
+        if (passwordEncoder.matches(requestDto.getNewPassword(), user.getPassword())) {
+            return ResponseCode.INVALID_INPUT_VALUE;
+        }
+
+        user.setPassword(passwordEncoder.encode(requestDto.getNewPassword()));
+        userRepository.save(user);
+
+        return ResponseCode.SUCCESS;
+    }
 }

@@ -1,6 +1,5 @@
 package com.sparta.springnewsfeed.follow;
 
-
 import com.sparta.springnewsfeed.common.Timestamped;
 import com.sparta.springnewsfeed.user.User;
 import jakarta.persistence.*;
@@ -12,6 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
+@IdClass(FollowId.class)
 @Table(name = "follow")
 public class Follow extends Timestamped {
 
@@ -30,4 +30,11 @@ public class Follow extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY) // 지연로딩
     @JoinColumn(name = "followed_id", insertable = false, updatable = false) // 충돌 방지
     private User followed; // 팔로우를 당한 대상자
+
+    public Follow(User follower, User followed) {
+        this.followerId = follower.getId();
+        this.followedId = followed.getId();
+        this.follower = follower;
+        this.followed = followed;
+    }
 }

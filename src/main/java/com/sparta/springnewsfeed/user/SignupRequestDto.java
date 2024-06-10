@@ -14,7 +14,7 @@ public class SignupRequestDto {
     @NotBlank(message = "사용자 ID는 필수 입력 값입니다.")
     @Size(min = 10, max = 20, message = "사용자 ID는 최소 10글자 이상, 최대 20글자 이하여야 합니다.")
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "사용자 ID는 대소문자 포함 영문 + 숫자만을 허용합니다.")
-    private String userid;
+    private String userId;
 
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
     @Size(min = 10, message = "비밀번호는 최소 10글자 이상이어야 합니다.")

@@ -24,8 +24,8 @@ public class FollowService {
     // 팔로우 하기
     @Transactional
     public ResponseCode followUser(String followerUserid, String followedUserid) {
-        Optional<User> followerOptional = userRepository.findByUserid(followerUserid);
-        Optional<User> followedOptional = userRepository.findByUserid(followedUserid);
+        Optional<User> followerOptional = userRepository.findByUserId(followerUserid);
+        Optional<User> followedOptional = userRepository.findByUserId(followedUserid);
 
         if (followerOptional.isEmpty() || followedOptional.isEmpty()) {
             return ResponseCode.ENTITY_NOT_FOUND;
@@ -52,8 +52,8 @@ public class FollowService {
     // 팔로우 취소
     @Transactional
     public ResponseCode unfollowUser(String followerUserid, String followedUserid) {
-        Optional<User> followerOptional = userRepository.findByUserid(followerUserid);
-        Optional<User> followedOptional = userRepository.findByUserid(followedUserid);
+        Optional<User> followerOptional = userRepository.findByUserId(followerUserid);
+        Optional<User> followedOptional = userRepository.findByUserId(followedUserid);
 
         if (followerOptional.isEmpty() || followedOptional.isEmpty()) {
             return ResponseCode.ENTITY_NOT_FOUND;

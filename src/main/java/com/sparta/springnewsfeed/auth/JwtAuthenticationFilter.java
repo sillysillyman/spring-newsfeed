@@ -41,7 +41,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
 
             // User 엔티티를 데이터베이스에서 가져옴
-            User user = userRepository.findByUserid(requestDto.getUserid())
+            User user = userRepository.findByUserId(requestDto.getUserId())
                     .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
             // 사용자 상태를 확인
@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 사용자 상태가 VERIFIED인 경우 인증 진행
             return getAuthenticationManager().authenticate( //사용자인증
                     new UsernamePasswordAuthenticationToken( //사용자인증정보저장
-                            requestDto.getUserid(),
+                            requestDto.getUserId(),
                             requestDto.getPassword(),
                             null
                     )
@@ -74,10 +74,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         log.info("JwtAuthenticationFilter: Authentication successful!");
-        String userid = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();//사용자 인증정보가져옴-getPrincipal
+        String userId = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();//사용자 인증정보가져옴-getPrincipal
 
-        String accessToken = jwtUtil.createAccessToken(userid);
-        String refreshToken = jwtUtil.createRefreshToken(userid);
+        String accessToken = jwtUtil.createAccessToken(userId);
+        String refreshToken = jwtUtil.createRefreshToken(userId);
 
 
         //응답 헤더에 토큰을 담기

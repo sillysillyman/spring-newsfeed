@@ -1,9 +1,9 @@
 package com.sparta.springnewsfeed.post;
 
+import com.sparta.springnewsfeed.auth.JwtUtil;
 import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
 import com.sparta.springnewsfeed.common.ResponseCode;
 import com.sparta.springnewsfeed.follow.Follow;
-import com.sparta.springnewsfeed.security.JwtTokenProvider;
 import com.sparta.springnewsfeed.user.User;
 import com.sparta.springnewsfeed.user.UserRepository;
 import java.util.ArrayList;
@@ -19,10 +19,10 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;//jwtProvider=>jwtUtil
 
     @Transactional
-    public HttpStatusResponseDto createPost(String token, Long userId, PostRequest request) {
+    public HttpStatusResponseDto createPost(String token, String userId, PostRequest request) {
         if (isValidUser(token, userId)) {
             return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
         }
@@ -52,9 +52,9 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public HttpStatusResponseDto getPostById(Long userId, Long postId) {
+    public HttpStatusResponseDto getPostById(String userId, Long postId) {
         Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getId().equals(userId)) {
+        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getUserId().equals(userId)) {
             return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
         }
         Post post = optionalPost.get();
@@ -62,8 +62,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public HttpStatusResponseDto getPostsByUserId(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
+    public HttpStatusResponseDto getPostsByUserId(String userId) {
+        Optional<User> optionalUser = userRepository.findByUserId(userId);
         if (optionalUser.isEmpty()) {
             return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
         }
@@ -77,12 +77,12 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public HttpStatusResponseDto getPostsOfFollowees(String token, Long userId) {
+    public HttpStatusResponseDto getPostsOfFollowees(String token, String userId) {
         if (!isValidUser(token, userId)) {
             return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
         }
 
-        Optional<User> optionalUser = userRepository.findById(userId);
+        Optional<User> optionalUser = userRepository.findByUserId(userId);
         if (optionalUser.isEmpty()) {
             return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
         }
@@ -103,14 +103,14 @@ public class PostService {
     }
 
     @Transactional
-    public HttpStatusResponseDto updatePost(String token, Long userId, Long postId,
+    public HttpStatusResponseDto updatePost(String token, String userId, Long postId,
         PostRequest request) {
         if (!isValidUser(token, userId)) {
             return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
         }
 
         Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getId().equals(userId)) {
+        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getUserId().equals(userId)) {
             return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
         }
 
@@ -122,13 +122,13 @@ public class PostService {
     }
 
     @Transactional
-    public HttpStatusResponseDto deletePost(String token, Long userId, Long postId) {
+    public HttpStatusResponseDto deletePost(String token, String userId, Long postId) {
         if (!isValidUser(token, userId)) {
             return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
         }
 
         Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getId().equals(userId)) {
+        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getUserId().equals(userId)) {
             return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
         }
 
@@ -136,14 +136,14 @@ public class PostService {
         return new HttpStatusResponseDto(ResponseCode.SUCCESS);
     }
 
-    private boolean isValidUser(String token, Long userId) {
-        Long tokenUserId = getUserIdFromToken(token);
+    private boolean isValidUser(String token, String userId) {
+        String tokenUserId = getUserIdFromToken(token);
         return tokenUserId != null && tokenUserId.equals(userId);
     }
 
-    private Long getUserIdFromToken(String token) {
+    private String getUserIdFromToken(String token) {
         try {
-            return Long.valueOf(jwtTokenProvider.getUserIdFromJwt(token));
+            return jwtUtil.getUserIdFromJwt(token);
         } catch (Exception e) {
             return null;
         }

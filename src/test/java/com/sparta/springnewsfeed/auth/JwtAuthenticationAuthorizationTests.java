@@ -134,7 +134,7 @@ public class JwtAuthenticationAuthorizationTests {
         String refreshToken = jwtUtil.createRefreshToken("testuserid");
 
         // Save refresh token in the database
-        User user = userRepository.findByUserid("testuserid").orElse(null);
+        User user = userRepository.findByUserId("testuserid").orElse(null);
         if (user != null) {
             user.setRefreshToken(refreshToken);
             userRepository.save(user);

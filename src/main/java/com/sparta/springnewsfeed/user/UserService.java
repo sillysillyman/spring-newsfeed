@@ -30,17 +30,17 @@ public class UserService {
     // 회원가입
     @Transactional
     public ResponseCode signup(SignupRequestDto requestDto) {
-        String userid = requestDto.getUserid();
+        String userId = requestDto.getUserId();
         String password = requestDto.getPassword();
         String email = requestDto.getEmail();
 
         // 중복된 사용자 확인
-        if (userRepository.existsByUserid(userid)) {
+        if (userRepository.existsByUserId(userId)) {
             throw new IllegalArgumentException(ResponseCode.DUPLICATE_ENTITY.getMessage());
         }
 
         // 탈퇴한 사용자 확인
-        if (userRepository.existsByUseridAndStatus(userid, UserStatusEnum.DELETED)) {
+        if (userRepository.existsByUserIdAndStatus(userId, UserStatusEnum.DELETED)) {
             throw new IllegalArgumentException(ResponseCode.INVALID_INPUT_VALUE.getMessage());
         }
 
@@ -49,7 +49,7 @@ public class UserService {
 
         // 사용자 생성 및 저장
         User user = new User();
-        user.setUserId(userid);
+        user.setUserId(userId);
         user.setPassword(encodedPassword); // 암호화된 비밀번호 저장
         user.setEmail(email);
         user.setStatus(UserStatusEnum.UNVERIFIED); // 초기 상태를 UNVERIFIED로 설정
@@ -61,7 +61,7 @@ public class UserService {
 
     // 로그인
     public ResponseCode login(LoginRequestDto requestDto) {
-        User user = userRepository.findByUserid(requestDto.getUserid())
+        User user = userRepository.findByUserId(requestDto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
@@ -78,8 +78,8 @@ public class UserService {
 
     // 프로필 수정
     @Transactional
-    public ResponseCode updateProfile(UpdateProfileRequestDto requestDto, MultipartFile profilePicture, String userid) {
-        User user = userRepository.findByUserid(userid)
+    public ResponseCode updateProfile(UpdateProfileRequestDto requestDto, MultipartFile profilePicture, String userId) {
+        User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         // 이름과 한줄소개 업데이트
@@ -106,8 +106,8 @@ public class UserService {
 
     // 비밀 번호 변경
     @Transactional
-    public ResponseCode updatePassword(UpdatePasswordRequestDto requestDto, String userid) {
-        User user = userRepository.findByUserid(userid)
+    public ResponseCode updatePassword(UpdatePasswordRequestDto requestDto, String userId) {
+        User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())) {
@@ -126,12 +126,12 @@ public class UserService {
 
     // 유저 조회
     @Transactional(readOnly = true)
-    public UserInquiryResponseDto getUserProfile(String userid) {
-        User user = userRepository.findByUserid(userid)
+    public UserInquiryResponseDto getUserProfile(String userId) {
+        User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         UserInquiryResponseDto responseDto = new UserInquiryResponseDto();
-        responseDto.setUserid(user.getUserId());
+        responseDto.setUserId(user.getUserId());
         responseDto.setName(user.getName());
         responseDto.setIntroduction(user.getIntroduction());
         responseDto.setEmail(user.getEmail());

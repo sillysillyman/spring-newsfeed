@@ -82,10 +82,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         private void handleValidTokens(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain, String accessToken, String refreshToken) throws IOException, ServletException {
             // 액세스 토큰에서 클레임(사용자 정보)을 추출
             Claims accessTokenClaims = jwtUtil.getUserInfoFromToken(accessToken);
-            String userid = accessTokenClaims.getSubject();
+            String userId = accessTokenClaims.getSubject();
 
             // 데이터베이스에서 사용자 정보 조회
-            User user = userRepository.findByUserid(userid).orElse(null);
+            User user = userRepository.findByUserId(userId).orElse(null);
             log.info("user ID: {}", user.getUserId());
             log.info("user token: {}",user.getRefreshToken().substring(BEARER_PREFIX.length()));
             log.info("refreshToken: {}",refreshToken);
@@ -93,7 +93,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             // 사용자가 존재하고, 요청의 리프레시 토큰이 DB에 저장된 리프레시 토큰과 일치하는지 확인
             if (user != null && refreshToken.equals(user.getRefreshToken().substring(BEARER_PREFIX.length()))) {
                 // 사용자 인증 설정
-                setAuthentication(userid);
+                setAuthentication(userId);
                 // 요청 필터링 수행
                 filterChain.doFilter(req, res);
             } else {
@@ -105,13 +105,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         //액세스 토큰이 만료되고 리프레시 토큰이 유효한 경우 새로운 액세스 토큰을 생성하고 응답 헤더에 추가.
     private void handleExpiredAccessToken(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain, String refreshToken) throws IOException, ServletException {
         Claims refreshTokenClaims = jwtUtil.getUserInfoFromToken(refreshToken);
-        String userid = refreshTokenClaims.getSubject();
+        String userId = refreshTokenClaims.getSubject();
 
-        User user = userRepository.findByUserid(userid).orElse(null);
+        User user = userRepository.findByUserId(userId).orElse(null);
         if (user != null && refreshToken.equals(user.getRefreshToken())) {
-            String newAccessToken = jwtUtil.createAccessToken(userid);
+            String newAccessToken = jwtUtil.createAccessToken(userId);
             res.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
-            setAuthentication(userid);
+            setAuthentication(userId);
             filterChain.doFilter(req, res);
         } else {
             handleInvalidTokens(res);
@@ -121,14 +121,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     //액세스 토큰이 유효하고 리프레시 토큰이 만료된 경우 새로운 리프레시 토큰을 생성하고 응답 헤더에 추가.
     private void handleExpiredRefreshToken(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain, String accessToken) throws IOException, ServletException {
         Claims accessTokenClaims = jwtUtil.getUserInfoFromToken(accessToken);
-        String userid = accessTokenClaims.getSubject();
+        String userId = accessTokenClaims.getSubject();
 
-        User user = userRepository.findByUserid(userid).orElse(null);
+        User user = userRepository.findByUserId(userId).orElse(null);
         if (user != null) {
-            String newRefreshToken = jwtUtil.createRefreshToken(userid);
+            String newRefreshToken = jwtUtil.createRefreshToken(userId);
             res.addHeader("Refresh-Token", newRefreshToken);
-            saveRefreshTokenToDatabase(userid, newRefreshToken);
-            setAuthentication(userid);
+            saveRefreshTokenToDatabase(userId, newRefreshToken);
+            setAuthentication(userId);
             filterChain.doFilter(req, res);
         } else {
             handleInvalidTokens(res);
@@ -142,29 +142,29 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
 
     // Refresh Token을 DB에 저장하는 메서드
-    private void saveRefreshTokenToDatabase(String userid, String newRefreshToken) {
-        User user = userRepository.findByUserid(userid).orElse(null);
+    private void saveRefreshTokenToDatabase(String userId, String newRefreshToken) {
+        User user = userRepository.findByUserId(userId).orElse(null);
         if (user != null) {
             user.setRefreshToken(newRefreshToken);
             userRepository.save(user);
         } else {
-            log.error("User not found: " + userid);
+            log.error("User not found: " + userId);
         }
     }
 
 
     // 인증 처리-사용자 아이디를 기반으로 Spring Security의 인증 객체를 생성하고, 인증 컨텍스트에 설정
-    public void setAuthentication(String userid) {
+    public void setAuthentication(String userId) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        Authentication authentication = createAuthentication(userid);
+        Authentication authentication = createAuthentication(userId);
         context.setAuthentication(authentication);
 
         SecurityContextHolder.setContext(context);
     }
 
     // 인증 객체 생성
-    private Authentication createAuthentication(String userid) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userid);
+    private Authentication createAuthentication(String userId) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }

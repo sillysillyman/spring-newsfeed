@@ -43,21 +43,21 @@ public class JwtUtil {
     }
 
     //ACCESS_TOKEN생성
-    public String createAccessToken(String userid) {
-        return createToken(userid, ACCESS_TOKEN_TIME);
+    public String createAccessToken(String userId) {
+        return createToken(userId, ACCESS_TOKEN_TIME);
     }
 
     //REFRESH_TOKEN생성
-    public String createRefreshToken(String userid) {
-        return createToken(userid, REFRESH_TOKEN_TIME);
+    public String createRefreshToken(String userId) {
+        return createToken(userId, REFRESH_TOKEN_TIME);
     }
 
     //토큰생성
-    private String createToken(String userid, long expirationTime) {
+    private String createToken(String userId, long expirationTime) {
         Date date = new Date();
 
         JwtBuilder builder = Jwts.builder()
-                .setSubject(userid)
+                .setSubject(userId)
                 .setExpiration(new Date(date.getTime() + expirationTime))//만료시간
                 .setIssuedAt(date)
                 .signWith(key, signatureAlgorithm);
@@ -65,7 +65,7 @@ public class JwtUtil {
         return BEARER_PREFIX + builder.compact();
     }
 
-    // Access Token 헤더에서 JWT 가져오기
+    // Access Token 헤더에서 JWT 가져오기->post에서도 이거쓰면됨 동일코드
     public String getAccessTokenFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
@@ -83,10 +83,14 @@ public class JwtUtil {
         return null;
     }
 
-    // 토큰에서 사용자 아이디 가져오기
-    public Long getUserIdFromToken(String token) {
-        Claims claims = getUserInfoFromToken(token);
-        return claims.get("userId", Long.class); // "userId" 클레임에서 사용자 아이디를 가져옴
+    // JWT 토큰에서 userId 추출-post에서사용
+    public String getUserIdFromJwt(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(key)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
     }
 
 

@@ -2,17 +2,13 @@ package com.sparta.springnewsfeed.user;
 
 import com.sparta.springnewsfeed.auth.JwtUtil;
 import com.sparta.springnewsfeed.auth.LoginRequestDto;
-import com.sparta.springnewsfeed.auth.WithdrawRequestDto;
 import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
 import com.sparta.springnewsfeed.common.ResponseCode;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -57,30 +53,30 @@ public class UserController {
     }
 
     // 프로필 수정
-    @PutMapping("/{userid}/update-profile")
+    @PutMapping("/{userId}/update-profile")
     public ResponseEntity<HttpStatusResponseDto> updateProfile(
-            @PathVariable String userid,
+            @PathVariable String userId,
             @Validated @RequestPart("updateProfileRequestDto") UpdateProfileRequestDto requestDto,
             @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture) {
-        ResponseCode responseCode = userService.updateProfile(requestDto, profilePicture, userid);
+        ResponseCode responseCode = userService.updateProfile(requestDto, profilePicture, userId);
         HttpStatusResponseDto response = new HttpStatusResponseDto(responseCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
     }
 
     // 바밀번호 변경
-    @PutMapping("/{userid}/update-password")
+    @PutMapping("/{userId}/update-password")
     public ResponseEntity<HttpStatusResponseDto> updatePassword(
-            @PathVariable String userid,
+            @PathVariable String userId,
             @Validated @RequestBody UpdatePasswordRequestDto requestDto) {
-        ResponseCode responseCode = userService.updatePassword(requestDto, userid);
+        ResponseCode responseCode = userService.updatePassword(requestDto, userId);
         HttpStatusResponseDto response = new HttpStatusResponseDto(responseCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
     }
 
     // 사용자 프로필 조회
-    @GetMapping("/{userid}/inquiry")
-    public ResponseEntity<UserInquiryResponseDto> getUserProfile(@PathVariable String userid) {
-        UserInquiryResponseDto userProfile = userService.getUserProfile(userid);
+    @GetMapping("/{userId}/inquiry")
+    public ResponseEntity<UserInquiryResponseDto> getUserProfile(@PathVariable String userId) {
+        UserInquiryResponseDto userProfile = userService.getUserProfile(userId);
         return new ResponseEntity<>(userProfile, HttpStatus.OK);
     }
 
@@ -128,10 +124,10 @@ public class UserController {
         // 토큰이 유효한지 확인
         if (StringUtils.hasText(refreshToken) && jwtUtil.validateToken(refreshToken)) {
             Claims refreshTokenClaims = jwtUtil.getUserInfoFromToken(refreshToken);
-            String userid = refreshTokenClaims.getSubject();
+            String userId = refreshTokenClaims.getSubject();
 
             // 유저의 리프레시 토큰 삭제
-            User user = userRepository.findByUserid(userid).orElse(null);
+            User user = userRepository.findByUserId(userId).orElse(null);
             if (user != null) {
                 user.setRefreshToken(null);
                 userRepository.save(user);
@@ -153,10 +149,10 @@ public class UserController {
         // 토큰이 유효한지 확인
         if (StringUtils.hasText(refreshToken) && jwtUtil.validateToken(refreshToken)) {
             Claims refreshTokenClaims = jwtUtil.getUserInfoFromToken(refreshToken);
-            String userid = refreshTokenClaims.getSubject();
+            String userId = refreshTokenClaims.getSubject();
 
             // 유저의 리프레시 토큰 삭제, 유저의 상태변경
-            User user = userRepository.findByUserid(userid).orElse(null);
+            User user = userRepository.findByUserId(userId).orElse(null);
             if (user != null) {
                 user.setRefreshToken(null);
                 user.setStatus(UserStatusEnum.DELETED);

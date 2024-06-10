@@ -9,12 +9,6 @@ import lombok.Setter;
 @Setter
 public class PostRequest {
 
-    @NotNull
-    private Long postId;
-
-    @NotNull
-    private Long userId;
-
     @NotBlank
     private String title;
 

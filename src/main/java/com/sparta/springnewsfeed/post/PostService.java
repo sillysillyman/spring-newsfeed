@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class PostService {
 
+    @Autowired
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;//jwtProvider=>jwtUtil
 
-    @Transactional
+    /*@Transactional
     public HttpStatusResponseDto createPost(String token, String userId, PostRequest request) {
         if (isValidUser(token, userId)) {
             return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
@@ -38,8 +40,12 @@ public class PostService {
         Post savedPost = postRepository.save(post);
 
         return new HttpStatusResponseDto(ResponseCode.CREATED, new PostResponse(savedPost));
-    }
+    }*/
 
+
+    public Post createPost(Post post) {
+        return postRepository.save(post);
+    }
 
     @Transactional(readOnly = true)
     public HttpStatusResponseDto getAllPosts() {

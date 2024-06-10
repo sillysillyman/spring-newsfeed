@@ -11,5 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class WithdrawRequestDto {
     private String userId;
-
+    private String password;
 }

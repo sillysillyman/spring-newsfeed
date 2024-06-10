@@ -2,13 +2,17 @@ package com.sparta.springnewsfeed.user;
 
 import com.sparta.springnewsfeed.auth.JwtUtil;
 import com.sparta.springnewsfeed.auth.LoginRequestDto;
+import com.sparta.springnewsfeed.auth.UserDetailsImpl;
 import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
 import com.sparta.springnewsfeed.common.ResponseCode;
+import com.sparta.springnewsfeed.post.Post;
+import com.sparta.springnewsfeed.post.PostService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,6 +28,9 @@ public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+
+    @Autowired
+    private PostService postService;
 
     @Autowired
     public UserController(UserService userService, JwtUtil jwtUtil,UserRepository userRepository) {
@@ -142,11 +149,12 @@ public class UserController {
 
     @PostMapping("/withdraw")
     public ResponseEntity<String> withdrawUser(HttpServletRequest request) {
+        //비밀번호가 일치할때 탈퇴가능-> 이부분을 뒤에 넣어야함? 아님 앞에넣어야함?..?
         // 헤더에서 토큰을 가져옴 ->
         String accessToken = jwtUtil.getAccessTokenFromHeader(request);
         String refreshToken = jwtUtil.getRefreshTokenFromHeader(request);
 
-        // 토큰이 유효한지 확인
+        // 토큰이 유효한지 확인-> 근데 access만 확인하는게 맞나..?
         if (StringUtils.hasText(refreshToken) && jwtUtil.validateToken(refreshToken)) {
             Claims refreshTokenClaims = jwtUtil.getUserInfoFromToken(refreshToken);
             String userId = refreshTokenClaims.getSubject();
@@ -163,6 +171,8 @@ public class UserController {
         return ResponseEntity.ok("Delete user successfully");
 
     }
+
+
 
     }
 

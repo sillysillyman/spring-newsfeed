@@ -1,8 +1,10 @@
 package com.sparta.springnewsfeed.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.springnewsfeed.auth.JwtUtil;
 import com.sparta.springnewsfeed.auth.LoginRequestDto;
 import com.sparta.springnewsfeed.auth.UserDetailsImpl;
+import com.sparta.springnewsfeed.auth.WithdrawRequestDto;
 import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
 import com.sparta.springnewsfeed.common.ResponseCode;
 import com.sparta.springnewsfeed.post.Post;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -28,9 +31,9 @@ public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
-
     @Autowired
-    private PostService postService;
+    private PasswordEncoder passwordEncoder;
+
 
     @Autowired
     public UserController(UserService userService, JwtUtil jwtUtil,UserRepository userRepository) {
@@ -60,29 +63,32 @@ public class UserController {
     }
 
     // 프로필 수정
-    @PutMapping("/{userId}/update-profile")
+    @PutMapping("/update-profile")
     public ResponseEntity<HttpStatusResponseDto> updateProfile(
-            @PathVariable String userId,
             @Validated @RequestPart("updateProfileRequestDto") UpdateProfileRequestDto requestDto,
-            @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture) {
+            @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        String userId = userDetails.getUser().getUserId();
         ResponseCode responseCode = userService.updateProfile(requestDto, profilePicture, userId);
         HttpStatusResponseDto response = new HttpStatusResponseDto(responseCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
     }
 
-    // 바밀번호 변경
-    @PutMapping("/{userId}/update-password")
+    // 비밀번호 변경
+    @PutMapping("/update-password")
     public ResponseEntity<HttpStatusResponseDto> updatePassword(
-            @PathVariable String userId,
-            @Validated @RequestBody UpdatePasswordRequestDto requestDto) {
+            @Validated @RequestBody UpdatePasswordRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        String userId = userDetails.getUser().getUserId();
         ResponseCode responseCode = userService.updatePassword(requestDto, userId);
         HttpStatusResponseDto response = new HttpStatusResponseDto(responseCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
     }
 
     // 사용자 프로필 조회
-    @GetMapping("/{userId}/inquiry")
-    public ResponseEntity<UserInquiryResponseDto> getUserProfile(@PathVariable String userId) {
+    @GetMapping("/inquiry")
+    public ResponseEntity<UserInquiryResponseDto> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        String userId = userDetails.getUser().getUserId();
         UserInquiryResponseDto userProfile = userService.getUserProfile(userId);
         return new ResponseEntity<>(userProfile, HttpStatus.OK);
     }
@@ -148,31 +154,44 @@ public class UserController {
 
 
     @PostMapping("/withdraw")
-    public ResponseEntity<String> withdrawUser(HttpServletRequest request) {
-        //비밀번호가 일치할때 탈퇴가능-> 이부분을 뒤에 넣어야함? 아님 앞에넣어야함?..?
-        // 헤더에서 토큰을 가져옴 ->
+    public ResponseEntity<String> withdrawUser(HttpServletRequest request, @RequestBody WithdrawRequestDto requestDto) {
+
+        // 헤더에서 토큰을 가져옴
         String accessToken = jwtUtil.getAccessTokenFromHeader(request);
         String refreshToken = jwtUtil.getRefreshTokenFromHeader(request);
 
-        // 토큰이 유효한지 확인-> 근데 access만 확인하는게 맞나..?
-        if (StringUtils.hasText(refreshToken) && jwtUtil.validateToken(refreshToken)) {
-            Claims refreshTokenClaims = jwtUtil.getUserInfoFromToken(refreshToken);
-            String userId = refreshTokenClaims.getSubject();
+        // 토큰이 유효한지 확인 (여기서는 accessToken을 사용하여 유효성 검증)
+        if (StringUtils.hasText(accessToken) && jwtUtil.validateToken(accessToken)) {
+            Claims accessTokenClaims = jwtUtil.getUserInfoFromToken(accessToken);
+            String userId = accessTokenClaims.getSubject();
 
-            // 유저의 리프레시 토큰 삭제, 유저의 상태변경
+            // 유저 정보 가져오기
             User user = userRepository.findByUserId(userId).orElse(null);
-            if (user != null) {
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+
+            // 비밀번호가 일치하는지 확인
+            if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password");
+            }
+
+            // 리프레시 토큰도 유효한지 확인
+            if (StringUtils.hasText(refreshToken) && jwtUtil.validateToken(refreshToken)) {
+                // 유저의 리프레시 토큰 삭제, 유저의 상태변경
                 user.setRefreshToken(null);
                 user.setStatus(UserStatusEnum.DELETED);
                 userRepository.save(user);
+
+                // 클라이언트 측 토큰 삭제 요청을 위해 응답 설정
+                return ResponseEntity.ok("User deleted successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
             }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid access token");
         }
-        // 클라이언트 측 토큰 삭제 요청을 위해 응답 설정
-        return ResponseEntity.ok("Delete user successfully");
-
     }
-
-
 
     }
 

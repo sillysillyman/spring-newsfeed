@@ -33,7 +33,6 @@ public class PostController {
         // 현재 인증된 사용자를 가져와 게시글의 작성자로 설정
         User author = userDetails.getUser();
         post.setUser(author);
-
         // 게시글 저장
         return postService.createPost(post);
     }

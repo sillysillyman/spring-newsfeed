@@ -18,11 +18,11 @@ public class CommentLikeController {
 
     @PostMapping("/{postId}/comment/{commentId}/like")
     public HttpStatusResponseDto doLike(@PathVariable Long postId, @PathVariable Long commentId, @RequestParam Long userId) {
-        return commentLikeService.doLike(commentId, userId);
+        return commentLikeService.doLike(postId, commentId, userId);
     }
 
     @DeleteMapping("/{postId}/comment/{commentId}/like")
     public HttpStatusResponseDto undoLike(@PathVariable Long postId, @PathVariable Long commentId, @RequestParam Long userId) {
-        return commentLikeService.undoLike(commentId, userId);
+        return commentLikeService.undoLike(postId, commentId, userId);
     }
 }

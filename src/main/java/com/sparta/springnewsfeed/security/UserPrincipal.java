@@ -1,36 +1,35 @@
-package com.sparta.springnewsfeed.auth;
-
+package com.sparta.springnewsfeed.security;
 
 import com.sparta.springnewsfeed.user.User;
-import com.sparta.springnewsfeed.user.UserStatusEnum;
+import java.util.Collection;
+import java.util.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-public class UserDetailsImpl implements UserDetails {
+public class UserPrincipal implements UserDetails {
 
     private final User user;
 
-    public UserDetailsImpl(User user) {
+    public UserPrincipal(User user) {
         this.user = user;
     }
 
-    public User getUser() {
-        return user;
+    public static UserPrincipal create(User user) {
+        return new UserPrincipal(user);
+    }
+
+    public Long getId() {
+        return user.getId();
+    }
+
+    public String getUserId() {
+        return user.getUserId();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String authority = "default";
-
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(simpleGrantedAuthority);    // 권한목록에 권한 추가
-
-        return authorities;
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
@@ -42,12 +41,6 @@ public class UserDetailsImpl implements UserDetails {
     public String getUsername() {
         return user.getUserId();
     }
-
-    //UserStatusEnum 가져오는 메서드
-    public UserStatusEnum getStatus() {
-        return user.getStatus();
-    }
-
 
     @Override
     public boolean isAccountNonExpired() {
@@ -69,4 +62,3 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 }
-

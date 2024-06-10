@@ -43,21 +43,21 @@ class SpringNewsfeedApplicationTests {
         // 사용자 db 등록
         User user1 = new User();
         user1.setName("글쓴이");
-        user1.setUserid("aaa");
+        user1.setUserId("aaa");
         user1.setPassword("1234");
         user1.setStatus(UserStatusEnum.VERIFIED);
         userRepository.save(user1);
 
         User user2 = new User();
         user2.setName("댓글러");
-        user2.setUserid("bbb");
+        user2.setUserId("bbb");
         user2.setPassword("1234");
         user2.setStatus(UserStatusEnum.VERIFIED);
         userRepository.save(user2);
 
         User user3 = new User();
         user3.setName("좋아요사냥꾼");
-        user3.setUserid("ccc");
+        user3.setUserId("ccc");
         user3.setPassword("1234");
         user3.setStatus(UserStatusEnum.VERIFIED);
         userRepository.save(user3);

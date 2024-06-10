@@ -86,7 +86,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             // 데이터베이스에서 사용자 정보 조회
             User user = userRepository.findByUserid(userid).orElse(null);
-            log.info("user ID: {}", user.getUserid());
+            log.info("user ID: {}", user.getUserId());
             log.info("user token: {}",user.getRefreshToken().substring(BEARER_PREFIX.length()));
             log.info("refreshToken: {}",refreshToken);
 

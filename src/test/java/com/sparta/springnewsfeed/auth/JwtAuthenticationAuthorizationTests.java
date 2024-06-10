@@ -38,7 +38,7 @@ public class JwtAuthenticationAuthorizationTests {
     public void setup() {
         // 테스트전 사용자 생성
         User user = new User();
-        user.setUserid("testuserid");
+        user.setUserId("testuserid");
         user.setName("TestUser");
         user.setPassword(passwordEncoder.encode("password"));
         user.setStatus(UserStatusEnum.VERIFIED);
@@ -70,7 +70,7 @@ public class JwtAuthenticationAuthorizationTests {
     public void testLoginUnverifiedUser() throws Exception {
         // 인증되지 않은 사용자 생성
         User user = new User();
-        user.setUserid("unverifiedUser");
+        user.setUserId("unverifiedUser");
         user.setName("unverifiedTestUser");
         user.setPassword(passwordEncoder.encode("password"));
         user.setStatus(UserStatusEnum.UNVERIFIED);
@@ -90,7 +90,7 @@ public class JwtAuthenticationAuthorizationTests {
     public void testLoginDeletedUser() throws Exception {
         // 삭제된 사용자 생성
         User user = new User();
-        user.setUserid("deletedUser");
+        user.setUserId("deletedUser");
         user.setName("deletedTestUser");
         user.setPassword(passwordEncoder.encode("password"));
         user.setStatus(UserStatusEnum.DELETED);

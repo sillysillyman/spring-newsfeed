@@ -4,7 +4,6 @@ import com.sparta.springnewsfeed.auth.LoginRequestDto;
 import com.sparta.springnewsfeed.common.ResponseCode;
 import com.sparta.springnewsfeed.common.S3Uploader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +49,7 @@ public class UserService {
 
         // 사용자 생성 및 저장
         User user = new User();
-        user.setUserid(userid);
+        user.setUserId(userid);
         user.setPassword(encodedPassword); // 암호화된 비밀번호 저장
         user.setEmail(email);
         user.setStatus(UserStatusEnum.UNVERIFIED); // 초기 상태를 UNVERIFIED로 설정
@@ -132,7 +131,7 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         UserInquiryResponseDto responseDto = new UserInquiryResponseDto();
-        responseDto.setUserid(user.getUserid());
+        responseDto.setUserid(user.getUserId());
         responseDto.setName(user.getName());
         responseDto.setIntroduction(user.getIntroduction());
         responseDto.setEmail(user.getEmail());

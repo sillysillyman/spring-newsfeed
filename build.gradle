@@ -69,6 +69,8 @@ dependencies {
     // Mail
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+    // Jakarta Servlet API
+    implementation 'jakarta.servlet:jakarta.servlet-api:4.0.4'
 }
 
 tasks.named('test') {

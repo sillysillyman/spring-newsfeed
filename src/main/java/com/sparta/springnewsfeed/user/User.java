@@ -2,11 +2,23 @@ package com.sparta.springnewsfeed.user;
 
 import com.sparta.springnewsfeed.comment.Comment;
 import com.sparta.springnewsfeed.common.Timestamped;
+import com.sparta.springnewsfeed.follow.Follow;
 import com.sparta.springnewsfeed.like.CommentLike;
 import com.sparta.springnewsfeed.like.PostLike;
 import com.sparta.springnewsfeed.post.Post;
-import com.sparta.springnewsfeed.follow.Follow;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,8 +41,8 @@ public class User extends Timestamped {
     private Long id;
 
     // 필드
-    @Column(nullable = false)
-    private String userid;
+    @Column(nullable = false, unique = true)
+    private String userId;
 
 
     @Column(nullable = false)

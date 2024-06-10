@@ -7,7 +7,6 @@ import com.sparta.springnewsfeed.post.PostRepository;
 import com.sparta.springnewsfeed.user.User;
 import com.sparta.springnewsfeed.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,7 +28,7 @@ public class PostLikeService {
         }
 
         // 예외 1) 이미 해당 userId-postId 로 좋아요 등록되어있는 경우
-        if (postLikeRepository.findByIdUserIdAndIdPostId(userId, postId).orElse(null) != null) {
+        if (postLikeRepository.existsByIdUserIdAndIdPostId(userId, postId)) {
             return new HttpStatusResponseDto(ResponseCode.DUPLICATE_ENTITY);
         }
 
@@ -44,6 +43,11 @@ public class PostLikeService {
 
     // 게시글 좋아요 취소 (삭제)
     public HttpStatusResponseDto undoLike(Long postId, Long userId) {
+        // postId, userId가 유효한지 확인 (등록되어있는 postId, userId인지 확인)
+        if (postRepository.existsById(postId) && userRepository.existsById(userId)) {
+            return new HttpStatusResponseDto(ResponseCode.INVALID_INPUT_VALUE);
+        }
+
         // 사용자 요청 userId-postId가 유효한지 검색
         PostLike postLike = postLikeRepository.findByIdUserIdAndIdPostId(userId, postId).orElse(null);
         if (postLike == null) {
@@ -53,5 +57,4 @@ public class PostLikeService {
         postLikeRepository.delete(postLike);
         return new HttpStatusResponseDto(ResponseCode.SUCCESS);
     }
-
 }

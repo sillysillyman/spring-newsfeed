@@ -31,17 +31,10 @@ dependencies {
     // Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    // OAuth2
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.security:spring-security-oauth2-jose'
-
     // JWT
     compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
-
-    // Thymeleaf
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'

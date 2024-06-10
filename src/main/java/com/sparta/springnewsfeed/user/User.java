@@ -39,7 +39,7 @@ public class User extends Timestamped {
     @Column
     private String email;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true)
     private String name;
 
     @Column

@@ -63,29 +63,32 @@ public class UserController {
     }
 
     // 프로필 수정
-    @PutMapping("/{userId}/update-profile")
+    @PutMapping("/update-profile")
     public ResponseEntity<HttpStatusResponseDto> updateProfile(
-            @PathVariable String userId,
             @Validated @RequestPart("updateProfileRequestDto") UpdateProfileRequestDto requestDto,
-            @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture) {
+            @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        String userId = userDetails.getUser().getUserId();
         ResponseCode responseCode = userService.updateProfile(requestDto, profilePicture, userId);
         HttpStatusResponseDto response = new HttpStatusResponseDto(responseCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
     }
 
-    // 바밀번호 변경
-    @PutMapping("/{userId}/update-password")
+    // 비밀번호 변경
+    @PutMapping("/update-password")
     public ResponseEntity<HttpStatusResponseDto> updatePassword(
-            @PathVariable String userId,
-            @Validated @RequestBody UpdatePasswordRequestDto requestDto) {
+            @Validated @RequestBody UpdatePasswordRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        String userId = userDetails.getUser().getUserId();
         ResponseCode responseCode = userService.updatePassword(requestDto, userId);
         HttpStatusResponseDto response = new HttpStatusResponseDto(responseCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
     }
 
     // 사용자 프로필 조회
-    @GetMapping("/{userId}/inquiry")
-    public ResponseEntity<UserInquiryResponseDto> getUserProfile(@PathVariable String userId) {
+    @GetMapping("/inquiry")
+    public ResponseEntity<UserInquiryResponseDto> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        String userId = userDetails.getUser().getUserId();
         UserInquiryResponseDto userProfile = userService.getUserProfile(userId);
         return new ResponseEntity<>(userProfile, HttpStatus.OK);
     }

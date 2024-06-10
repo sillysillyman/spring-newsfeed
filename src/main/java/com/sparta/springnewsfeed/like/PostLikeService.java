@@ -44,7 +44,7 @@ public class PostLikeService {
     // 게시글 좋아요 취소 (삭제)
     public HttpStatusResponseDto undoLike(Long postId, Long userId) {
         // postId, userId가 유효한지 확인 (등록되어있는 postId, userId인지 확인)
-        if (postRepository.existsById(postId) && userRepository.existsById(userId)) {
+        if (!postRepository.existsById(postId) || !userRepository.existsById(userId)) {
             return new HttpStatusResponseDto(ResponseCode.INVALID_INPUT_VALUE);
         }
 

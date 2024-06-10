@@ -1,6 +1,5 @@
 package com.sparta.springnewsfeed.auth;
 
-
 import com.sparta.springnewsfeed.user.User;
 import com.sparta.springnewsfeed.user.UserStatusEnum;
 import org.springframework.security.core.GrantedAuthority;
@@ -47,7 +46,6 @@ public class UserDetailsImpl implements UserDetails {
     public UserStatusEnum getStatus() {
         return user.getStatus();
     }
-
 
     @Override
     public boolean isAccountNonExpired() {

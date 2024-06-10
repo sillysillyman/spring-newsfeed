@@ -88,41 +88,6 @@ public class PostService {
         return new HttpStatusResponseDto(ResponseCode.SUCCESS, postResponses);
     }
 
-//    @Transactional
-//    public HttpStatusResponseDto updatePost(String token, String userId, Long postId,
-//        PostRequest request) {
-//        if (!isValidUser(token, userId)) {
-//            return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
-//        }
-//
-//        Optional<Post> optionalPost = postRepository.findById(postId);
-//        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getUserId().equals(userId)) {
-//            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
-//        }
-//
-//        Post post = optionalPost.get();
-//        post.setTitle(request.getTitle());
-//        post.setContent(request.getContent());
-//        Post updatedPost = postRepository.save(post);
-//        return new HttpStatusResponseDto(ResponseCode.SUCCESS, new PostResponse(updatedPost));
-//    }
-//
-//    @Transactional
-//    public HttpStatusResponseDto deletePost(String token, String userId, Long postId) {
-//        if (!isValidUser(token, userId)) {
-//            return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
-//        }
-//
-//        Optional<Post> optionalPost = postRepository.findById(postId);
-//        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getUserId().equals(userId)) {
-//            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
-//        }
-//
-//        postRepository.delete(optionalPost.get());
-//        return new HttpStatusResponseDto(ResponseCode.SUCCESS);
-//    }
-
-
     @Transactional
     public HttpStatusResponseDto updatePost(User user, Long postId, PostRequest request) {
         Optional<Post> optionalPost = postRepository.findById(postId);

@@ -60,19 +60,6 @@ public class PostController {
         return postService.getPostById(userId, postId);
     }
 
-    //    @PutMapping("/{userId}/posts/{postId}")
-//    public HttpStatusResponseDto updatePost(@PathVariable String userId, @PathVariable Long postId,
-//        @RequestBody PostRequest postRequest, HttpServletRequest request) {
-//        String token = jwtUtil.getAccessTokenFromHeader(request);
-//        return postService.updatePost(token, userId, postId, postRequest);
-//    }
-//
-//    @DeleteMapping("/{userId}/posts/{postId}")
-//    public HttpStatusResponseDto deletePost(@PathVariable String userId, @PathVariable Long postId,
-//        HttpServletRequest request) {
-//        String token = jwtUtil.getAccessTokenFromHeader(request);
-//        return postService.deletePost(token, userId, postId);
-//    }
     @PutMapping("/posts/{postId}")
     public HttpStatusResponseDto updatePost(@PathVariable Long postId,
         @RequestBody PostRequest postRequest,

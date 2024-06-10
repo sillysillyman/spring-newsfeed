@@ -1,6 +1,5 @@
 package com.sparta.springnewsfeed.auth;
 
-
 import static com.sparta.springnewsfeed.auth.JwtUtil.BEARER_PREFIX;
 
 import com.sparta.springnewsfeed.user.User;

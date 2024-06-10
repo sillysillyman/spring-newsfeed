@@ -1,14 +1,11 @@
 package com.sparta.springnewsfeed.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.springnewsfeed.auth.JwtUtil;
 import com.sparta.springnewsfeed.auth.LoginRequestDto;
 import com.sparta.springnewsfeed.auth.UserDetailsImpl;
 import com.sparta.springnewsfeed.auth.WithdrawRequestDto;
 import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
 import com.sparta.springnewsfeed.common.ResponseCode;
-import com.sparta.springnewsfeed.post.Post;
-import com.sparta.springnewsfeed.post.PostService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +16,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.stream.Collectors;
@@ -48,18 +52,6 @@ public class UserController {
         ResponseCode responseCode = userService.signup(requestDto);
         HttpStatusResponseDto response = new HttpStatusResponseDto(responseCode);
         return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
-    }
-
-    // 로그인
-    @PostMapping("/login")
-    public ResponseEntity<HttpStatusResponseDto> login(@RequestBody LoginRequestDto requestDto) {
-        try {
-            ResponseCode responseCode = userService.login(requestDto);
-            HttpStatusResponseDto response = new HttpStatusResponseDto(responseCode);
-            return new ResponseEntity<>(response, HttpStatus.valueOf(responseCode.getStatusCode()));
-        } catch (IllegalArgumentException e) {
-            return handleIllegalArgumentException(e);
-        }
     }
 
     // 프로필 수정

@@ -1,6 +1,5 @@
 package com.sparta.springnewsfeed.auth;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.springnewsfeed.user.User;
 import com.sparta.springnewsfeed.user.UserRepository;

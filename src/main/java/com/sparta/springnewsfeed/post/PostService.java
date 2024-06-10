@@ -21,27 +21,7 @@ public class PostService {
     @Autowired
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;//jwtProvider=>jwtUtil
-
-    /*@Transactional
-    public HttpStatusResponseDto createPost(String token, String userId, PostRequest request) {
-        if (isValidUser(token, userId)) {
-            return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
-        }
-
-        Optional<User> optionalUser = userRepository.findById(request.getUserId());
-        if (optionalUser.isEmpty()) {
-            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
-        }
-
-        User user = optionalUser.get();
-
-        Post post = new Post(request.getTitle(), request.getContent(), user);
-        Post savedPost = postRepository.save(post);
-
-        return new HttpStatusResponseDto(ResponseCode.CREATED, new PostResponse(savedPost));
-    }*/
-
+    private final JwtUtil jwtUtil;
 
     public Post createPost(Post post) {
         return postRepository.save(post);
@@ -108,15 +88,46 @@ public class PostService {
         return new HttpStatusResponseDto(ResponseCode.SUCCESS, postResponses);
     }
 
-    @Transactional
-    public HttpStatusResponseDto updatePost(String token, String userId, Long postId,
-        PostRequest request) {
-        if (!isValidUser(token, userId)) {
-            return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
-        }
+//    @Transactional
+//    public HttpStatusResponseDto updatePost(String token, String userId, Long postId,
+//        PostRequest request) {
+//        if (!isValidUser(token, userId)) {
+//            return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
+//        }
+//
+//        Optional<Post> optionalPost = postRepository.findById(postId);
+//        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getUserId().equals(userId)) {
+//            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
+//        }
+//
+//        Post post = optionalPost.get();
+//        post.setTitle(request.getTitle());
+//        post.setContent(request.getContent());
+//        Post updatedPost = postRepository.save(post);
+//        return new HttpStatusResponseDto(ResponseCode.SUCCESS, new PostResponse(updatedPost));
+//    }
+//
+//    @Transactional
+//    public HttpStatusResponseDto deletePost(String token, String userId, Long postId) {
+//        if (!isValidUser(token, userId)) {
+//            return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
+//        }
+//
+//        Optional<Post> optionalPost = postRepository.findById(postId);
+//        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getUserId().equals(userId)) {
+//            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
+//        }
+//
+//        postRepository.delete(optionalPost.get());
+//        return new HttpStatusResponseDto(ResponseCode.SUCCESS);
+//    }
 
+
+    @Transactional
+    public HttpStatusResponseDto updatePost(User user, Long postId, PostRequest request) {
         Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getUserId().equals(userId)) {
+        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getUserId()
+            .equals(user.getUserId())) {
             return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
         }
 
@@ -128,13 +139,10 @@ public class PostService {
     }
 
     @Transactional
-    public HttpStatusResponseDto deletePost(String token, String userId, Long postId) {
-        if (!isValidUser(token, userId)) {
-            return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
-        }
-
+    public HttpStatusResponseDto deletePost(User user, Long postId) {
         Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getUserId().equals(userId)) {
+        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getUserId()
+            .equals(user.getUserId())) {
             return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
         }
 

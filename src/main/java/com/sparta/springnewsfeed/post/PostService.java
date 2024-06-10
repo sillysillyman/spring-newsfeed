@@ -3,11 +3,11 @@ package com.sparta.springnewsfeed.post;
 import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
 import com.sparta.springnewsfeed.common.ResponseCode;
 import com.sparta.springnewsfeed.follow.Follow;
+import com.sparta.springnewsfeed.security.JwtTokenProvider;
 import com.sparta.springnewsfeed.user.User;
 import com.sparta.springnewsfeed.user.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,9 +19,14 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public HttpStatusResponseDto createPost(PostRequest request) {
+    public HttpStatusResponseDto createPost(String token, Long userId, PostRequest request) {
+        if (isValidUser(token, userId)) {
+            return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
+        }
+
         Optional<User> optionalUser = userRepository.findById(request.getUserId());
         if (optionalUser.isEmpty()) {
             return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
@@ -35,10 +40,14 @@ public class PostService {
         return new HttpStatusResponseDto(ResponseCode.CREATED, new PostResponse(savedPost));
     }
 
+
     @Transactional(readOnly = true)
     public HttpStatusResponseDto getAllPosts() {
         List<PostResponse> posts = postRepository.findAll().stream().map(PostResponse::new)
             .toList();
+        if (posts.isEmpty()) {
+            return new HttpStatusResponseDto(ResponseCode.SUCCESS, "먼저 작성하여 소식을 알려보세요");
+        }
         return new HttpStatusResponseDto(ResponseCode.SUCCESS, posts);
     }
 
@@ -58,7 +67,11 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public HttpStatusResponseDto getPostsOfFollowees(Long userId) {
+    public HttpStatusResponseDto getPostsOfFollowees(String token, Long userId) {
+        if (!isValidUser(token, userId)) {
+            return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
+        }
+
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
             return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
@@ -80,46 +93,49 @@ public class PostService {
     }
 
     @Transactional
-    public HttpStatusResponseDto updatePost(PostRequest request) {
-        Optional<Post> optionalPost = postRepository.findById(request.getPostId());
-        if (optionalPost.isEmpty()) {
+    public HttpStatusResponseDto updatePost(String token, Long userId, Long postId,
+        PostRequest request) {
+        if (!isValidUser(token, userId)) {
+            return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
+        }
+
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getId().equals(userId)) {
             return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
         }
 
         Post post = optionalPost.get();
-
-        if (!post.getUser().getId().equals(request.getUserId())) {
-            return new HttpStatusResponseDto(ResponseCode.ACCESS_DENIED);
-        }
-
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
-
         Post updatedPost = postRepository.save(post);
-
         return new HttpStatusResponseDto(ResponseCode.SUCCESS, new PostResponse(updatedPost));
     }
 
     @Transactional
-    public HttpStatusResponseDto deletePost(Long userId, Long postId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isEmpty()) {
-            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
+    public HttpStatusResponseDto deletePost(String token, Long userId, Long postId) {
+        if (!isValidUser(token, userId)) {
+            return new HttpStatusResponseDto(ResponseCode.UNAUTHORIZED);
         }
 
         Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isEmpty()) {
+        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getId().equals(userId)) {
             return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
         }
 
-        User user = optionalUser.get();
-        Post post = optionalPost.get();
-        if (!Objects.equals(post.getUser().getId(), user.getId())) {
-            return new HttpStatusResponseDto(ResponseCode.ACCESS_DENIED);
-        }
-
-        postRepository.delete(post);
-
+        postRepository.delete(optionalPost.get());
         return new HttpStatusResponseDto(ResponseCode.SUCCESS);
+    }
+
+    private boolean isValidUser(String token, Long userId) {
+        Long tokenUserId = getUserIdFromToken(token);
+        return tokenUserId != null && tokenUserId.equals(userId);
+    }
+
+    private Long getUserIdFromToken(String token) {
+        try {
+            return Long.valueOf(jwtTokenProvider.getUserIdFromJwt(token));
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

@@ -1,7 +1,9 @@
 package com.sparta.springnewsfeed.like;
 
+import com.sparta.springnewsfeed.auth.UserDetailsImpl;
 import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,12 +19,12 @@ public class CommentLikeController {
     private final CommentLikeService commentLikeService;
 
     @PostMapping("/{postId}/comment/{commentId}/like")
-    public HttpStatusResponseDto doLike(@PathVariable Long postId, @PathVariable Long commentId, @RequestParam Long userId) {
-        return commentLikeService.doLike(postId, commentId, userId);
+    public HttpStatusResponseDto doLike(@PathVariable Long postId, @PathVariable Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentLikeService.doLike(postId, commentId, userDetails.getUser().getId());
     }
 
     @DeleteMapping("/{postId}/comment/{commentId}/like")
-    public HttpStatusResponseDto undoLike(@PathVariable Long postId, @PathVariable Long commentId, @RequestParam Long userId) {
-        return commentLikeService.undoLike(postId, commentId, userId);
+    public HttpStatusResponseDto undoLike(@PathVariable Long postId, @PathVariable Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentLikeService.undoLike(postId, commentId, userDetails.getUser().getId());
     }
 }

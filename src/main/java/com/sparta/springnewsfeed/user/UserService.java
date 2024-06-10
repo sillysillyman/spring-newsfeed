@@ -1,8 +1,10 @@
 package com.sparta.springnewsfeed.user;
 
+import com.sparta.springnewsfeed.auth.LoginRequestDto;
 import com.sparta.springnewsfeed.common.ResponseCode;
 import com.sparta.springnewsfeed.common.S3Uploader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

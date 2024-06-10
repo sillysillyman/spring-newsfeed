@@ -52,6 +52,16 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
+    public HttpStatusResponseDto getPostById(Long userId, Long postId) {
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isEmpty() || !optionalPost.get().getUser().getId().equals(userId)) {
+            return new HttpStatusResponseDto(ResponseCode.ENTITY_NOT_FOUND);
+        }
+        Post post = optionalPost.get();
+        return new HttpStatusResponseDto(ResponseCode.SUCCESS, new PostResponse(post));
+    }
+
+    @Transactional(readOnly = true)
     public HttpStatusResponseDto getPostsByUserId(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {

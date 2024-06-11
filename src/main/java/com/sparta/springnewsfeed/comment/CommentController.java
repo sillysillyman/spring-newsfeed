@@ -19,7 +19,7 @@ public class CommentController {
 
     // 댓글 생성, 수정, 조회, 삭제 기능
     @PostMapping("/{postId}/comments")
-    public Comment addComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public HttpStatusResponseDto addComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                               @PathVariable Long postId,
                               @RequestBody CommentRequestDto requestDto) {
         // 현재 인증된 사용자를 가져와서 댓글의 작성자로 설정

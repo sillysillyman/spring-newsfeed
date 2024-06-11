@@ -28,7 +28,7 @@ public class PostController {
 
 
     @PostMapping("/posts")
-    public Post createPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public HttpStatusResponseDto createPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
         @RequestBody Post post) {
         // 현재 인증된 사용자를 가져와 게시글의 작성자로 설정
         User author = userDetails.getUser();

@@ -23,8 +23,9 @@ public class PostService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
-    public Post createPost(Post post) {
-        return postRepository.save(post);
+    public HttpStatusResponseDto createPost(Post post) {
+        postRepository.save(post);
+        return new HttpStatusResponseDto(ResponseCode.SUCCESS, new PostResponse(post));
     }
 
     @Transactional(readOnly = true)

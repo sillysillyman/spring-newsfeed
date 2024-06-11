@@ -2,8 +2,10 @@ package com.sparta.springnewsfeed.comment;
 
 import com.sparta.springnewsfeed.common.HttpStatusResponseDto;
 import com.sparta.springnewsfeed.common.ResponseCode;
+import com.sparta.springnewsfeed.post.Post;
 import com.sparta.springnewsfeed.post.PostRepository;
 import com.sparta.springnewsfeed.user.User;
+import com.sparta.springnewsfeed.user.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,18 +20,24 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
-    public Comment addComment(Long postId, CommentRequestDto requestDto, User user) {
+    public HttpStatusResponseDto addComment(Long postId, CommentRequestDto requestDto, User user) {
+        Post post = postRepository.findById(postId).orElse(null);
+        if (post == null) {
+            return new HttpStatusResponseDto(ResponseCode.INVALID_INPUT_VALUE, "잘못된 postId입니다.");
+        }
         Comment comment = new Comment();
-        comment.setPost(postRepository.findById(postId).get());
+        comment.setPost(post);
         comment.setUser(user);
         comment.setContent(requestDto.getCommentContents());
-        return commentRepository.save(comment);
+        commentRepository.save(comment);
+        return new HttpStatusResponseDto(ResponseCode.SUCCESS, new CommentResponseDto(comment));
     }
 
     // 특정 게시글에 대한 댓글 조회
     @Transactional(readOnly = true)
     public HttpStatusResponseDto getComments(Long postId) {
-        List<Comment> comments = commentRepository.findAllById(Collections.singleton(postId));
+        List<CommentResponseDto> comments = commentRepository.findAllById(Collections.singleton(postId))
+                .stream().map(CommentResponseDto::new).toList();
         if (comments.isEmpty()) {
             return new HttpStatusResponseDto(ResponseCode.SUCCESS, "작성하신 댓글이 없습니다.");
         }

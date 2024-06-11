@@ -29,25 +29,23 @@
     - Access Token 만료시간 30분, Refresh Token 만료 시간 2주
     - Access Token 만료 시 :  유효한 Refresh Token을 통해 새로운 Access Token과 Refresh Token을 발급
     - Refresh Token 만료 시 : 재로그인을 통해 새로운 Access Token과 Refresh Token을 발급
-    - API를 요청할 때는 Access Token을 사용합니다
+    - API를 요청할 때 Access Token을 사용합니다
 
 1. 최초 로그인 처리
     - 일반 로그인:
-      Spring Security가 사용자의 이메일과 비밀번호를 사용하여 인증합니다.
+      Spring Security가 사용자의 이메일과 비밀번호를 사용하여 Authentication필터를 통해 인증합니다.
       사용자의 입력 비밀번호는 BCryptPasswordEncoder를 통해 암호화된 비밀번호와 비교됩니다.
-    - 소셜 로그인:
-      Spring Security와 OAuth 2.0을 사용하여 소셜 로그인 제공자(예: Google, Naver, Kakao)를 통해 인증을 처리합니다.
-      인증 과정에서 소셜 제공자로부터 사용자 정보를 받아옵니다.
+   
     - 인증 성공 후 처리:
-      인증이 성공하면 서버는 JWT를 생성합니다.
-      생성된 JWT는 쿠키에 저장되어 클라이언트에 반환됩니다.
+      인증이 성공하면 서버  JWT를 생성합니다.
+      생성된 JWT는 헤더에 저장되어 클라이언트에 반환됩니다. (Refresh Token은 사용자의 db에 저장됩니다)
 
 2. 이후 요청 처리
     - JWT 포함 요청:
-      클라이언트는 이후 모든 요청에 JWT를 로그인 성공 시, header에 토큰을 추가하고 성공 상태코드와 메세지를 반환합니다포함하여 서버에 전송합니다.
+      클라이언트는 로그인 성공 시, 이후 모든 요청에 JWT를 header에 토큰을 추가하고 성공 상태코드와 메세지를 포함하여 서버에 전송합니다.
     - JWT 검증:
-      Spring Security의 필터 체인에 추가된 JWT 필터가 모든 요청을 가로채고 JWT를 검증합니다.
-      JWT 필터는 JWT의 서명과 만료 시간을 확인하여 유효성을 검증합니다.
+      Spring Security의 필터 체인에 추가된 JWTAuthorization 필터가 모든 요청을 가로채고 JWT를 검증합니다.
+      JWT 필터내에서 JWT의 서명과 만료 시간을 확인하여 유효성을 검증합니다.
     - 인증된 요청 처리
       JWT가 유효하면 해당 요청은 인증된 상태로 처리됩니다.
       인증된 사용자 정보는 SecurityContextHolder에 저장되어 이후의 요청 처리에 사용됩니다.

@@ -25,7 +25,7 @@ public class PostService {
 
     public HttpStatusResponseDto createPost(Post post) {
         postRepository.save(post);
-        return new HttpStatusResponseDto(ResponseCode.SUCCESS, new PostResponse(post));
+        return new HttpStatusResponseDto(ResponseCode.CREATED, new PostResponse(post));
     }
 
     @Transactional(readOnly = true)

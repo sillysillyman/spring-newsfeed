@@ -37,13 +37,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request,
         HttpServletResponse response) throws AuthenticationException {
         log.info("start JwtAuthenticationFilter");
+
         try {
             // HttpServletRequest 를 LoginRequestDto 객체로 변환
-            LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(),
+            LoginRequestDto loginRequestDto = new ObjectMapper().readValue(request.getInputStream(),
                 LoginRequestDto.class);
 
             // User 엔티티를 데이터베이스에서 가져옴
-            User user = userRepository.findByUsername(requestDto.getUsername())
+            User user = userRepository.findByUsername(loginRequestDto.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
             // 사용자 상태를 확인
@@ -60,8 +61,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 사용자 상태가 VERIFIED인 경우 인증 진행
             return getAuthenticationManager().authenticate( //사용자인증
                 new UsernamePasswordAuthenticationToken( //사용자인증정보저장
-                    requestDto.getUsername(),
-                    requestDto.getPassword(),
+                    loginRequestDto.getUsername(),
+                    loginRequestDto.getPassword(),
                     null
                 )
             );
@@ -75,8 +76,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     //사용자인증에 성공했을때(로그인한 사용자가 db에저장된 사용자일때)
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, FilterChain chain, Authentication authResult)
-        throws IOException {
+        HttpServletResponse response, FilterChain filterChain, Authentication authResult) {
         log.info("JwtAuthenticationFilter: Authentication successful!");
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();//사용자 인증정보가져옴-getPrincipal
 
@@ -85,7 +85,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         //응답 헤더에 토큰을 담기
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
-        response.addHeader("Refresh-Token", refreshToken);
+        response.addHeader(JwtUtil.REFRESH_TOKEN_HEADER, refreshToken);
 
         // User의 refreshToken 필드에 Refresh Token 저장
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
@@ -101,7 +101,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void unsuccessfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, AuthenticationException failed) throws IOException {
         log.info("JwtAuthenticationFilter: Authentication failed!");
-        response.setStatus(401);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("msg", "로그인 실패");

@@ -67,21 +67,25 @@ public class JwtUtil {
         return BEARER_PREFIX + builder.compact();
     }
 
-    // Access Token 헤더에서 JWT 가져오기->post에서도 이거쓰면됨 동일코드
+    // Access Token 헤더에서 JWT 가져오기
     public String getAccessTokenFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(BEARER_PREFIX.length());
         }
+
         return null;
     }
 
     // Refresh Token 헤더에서 JWT 가져오기
     public String getRefreshTokenFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader(REFRESH_TOKEN_HEADER);
+
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(BEARER_PREFIX.length());
         }
+
         return null;
     }
 

@@ -6,14 +6,17 @@ import lombok.Getter;
 @Getter
 public class PostResponseDto {
 
-    private Long postId;
+    private final Long postId;
 
-    private String title;
+    private final String username;
 
-    private String content;
+    private final String title;
+
+    private final String content;
 
     public PostResponseDto(Post post) {
         this.postId = post.getId();
+        this.username = post.getUser().getUsername();
         this.title = post.getTitle();
         this.content = post.getContent();
     }

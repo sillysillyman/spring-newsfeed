@@ -2,13 +2,17 @@ package io.sillysillyman.springnewsfeed.post.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.sillysillyman.springnewsfeed.common.ValidatorUtils;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 public class PostRequestDtoTest {
+
+    private static final Validator validator = ValidatorUtils.getValidator();
 
     @Test
     public void should_CreatePostRequestDto_when_ValidDataProvided() {
@@ -20,8 +24,10 @@ public class PostRequestDtoTest {
         PostRequestDto postRequestDto = new PostRequestDto();
         postRequestDto.setTitle(title);
         postRequestDto.setContent(content);
+        Set<ConstraintViolation<PostRequestDto>> violations = validator.validate(postRequestDto);
 
         // then
+        assertTrue(violations.isEmpty());
         assertNotNull(postRequestDto);
         assertEquals(title, postRequestDto.getTitle());
         assertEquals(content, postRequestDto.getContent());

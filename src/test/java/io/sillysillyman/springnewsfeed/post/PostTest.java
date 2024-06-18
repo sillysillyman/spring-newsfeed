@@ -12,11 +12,11 @@ public class PostTest {
     public void given_UserExists_when_PostCreated_then_PostShouldHaveCorrectUser() {
         // given
         User user = new User();
-        user.setUsername("testuser");
+        user.setUsername("testUser");
 
         // when
         Post post = new Post();
-        post.setTitle("Test title");
+        post.setTitle("Test Title");
         post.setContent("Test Content");
         post.setUser(user);
 
@@ -24,6 +24,6 @@ public class PostTest {
         assertNotNull(post);
         assertEquals("Test Title", post.getTitle());
         assertEquals("Test Content", post.getContent());
-        assertEquals("testuser", post.getUser().getUsername());
+        assertEquals("testUser", post.getUser().getUsername());
     }
 }

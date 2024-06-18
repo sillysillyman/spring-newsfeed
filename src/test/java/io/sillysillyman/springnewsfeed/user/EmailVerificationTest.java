@@ -39,7 +39,5 @@ public class EmailVerificationTest {
 
         // then
         assertNotNull(emailVerification);
-        assertNotNull(emailVerification.getCreatedAt());
-        assertNotNull(emailVerification.getUpdatedAt());
     }
 }

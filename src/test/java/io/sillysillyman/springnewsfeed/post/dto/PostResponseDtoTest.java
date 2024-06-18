@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 public class PostResponseDtoTest {
 
     @Test
-    public void should_CreatePostResponseDto_when_ValidPostProvided() {
+    public void should_CreatePostResponseDto_when_ValidDataProvided() {
         //given
         User user = new User();
         user.setUsername("testUser");

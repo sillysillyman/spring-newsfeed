@@ -3,8 +3,6 @@ package io.sillysillyman.springnewsfeed.common;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -18,11 +16,15 @@ public abstract class Timestamped {
 
     @CreatedDate
     @Column(updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
+
+    public Timestamped() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
 }

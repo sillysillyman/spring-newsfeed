@@ -3,25 +3,12 @@ package io.sillysillyman.springnewsfeed.post.dto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import io.sillysillyman.springnewsfeed.common.ValidatorUtils;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import java.util.Set;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class PostRequestDtoTest {
-
-    private static Validator validator;
-
-    @BeforeAll
-    public static void setUpValidator() {
-        try (ValidatorFactory factory = Validation.byDefaultProvider().configure()
-            .buildValidatorFactory()) {
-            validator = factory.getValidator();
-        }
-    }
 
     @Test
     public void should_CreatePostRequestDto_when_ValidDataProvided() {
@@ -52,11 +39,12 @@ public class PostRequestDtoTest {
         postRequestDto.setContent(content);
 
         // then
-        Set<ConstraintViolation<PostRequestDto>> violations = validator.validate(postRequestDto);
+        Set<ConstraintViolation<PostRequestDto>> violations = ValidatorUtils.validateField(
+            postRequestDto, "title");
         assertEquals(1, violations.size());
 
         ConstraintViolation<PostRequestDto> violation = violations.iterator().next();
-        assertEquals("공백일 수 없습니다", violation.getMessage());
+        assertEquals("must not be blank", violation.getMessage());
         assertEquals("title", violation.getPropertyPath().toString());
     }
 
@@ -72,11 +60,12 @@ public class PostRequestDtoTest {
         postRequestDto.setContent(content);
 
         // then
-        Set<ConstraintViolation<PostRequestDto>> violations = validator.validate(postRequestDto);
+        Set<ConstraintViolation<PostRequestDto>> violations = ValidatorUtils.validateField(
+            postRequestDto, "content");
         assertEquals(1, violations.size());
 
         ConstraintViolation<PostRequestDto> violation = violations.iterator().next();
-        assertEquals("널이어서는 안됩니다", violation.getMessage());
+        assertEquals("must not be null", violation.getMessage());
         assertEquals("content", violation.getPropertyPath().toString());
     }
 }

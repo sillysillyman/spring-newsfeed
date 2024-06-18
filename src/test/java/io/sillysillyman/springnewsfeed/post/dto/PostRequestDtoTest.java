@@ -56,7 +56,7 @@ public class PostRequestDtoTest {
         assertEquals(1, violations.size());
 
         ConstraintViolation<PostRequestDto> violation = violations.iterator().next();
-        assertEquals("must not be blank", violation.getMessage());
+        assertEquals("공백일 수 없습니다", violation.getMessage());
         assertEquals("title", violation.getPropertyPath().toString());
     }
 
@@ -76,7 +76,7 @@ public class PostRequestDtoTest {
         assertEquals(1, violations.size());
 
         ConstraintViolation<PostRequestDto> violation = violations.iterator().next();
-        assertEquals("must not be null", violation.getMessage());
+        assertEquals("널이어서는 안됩니다", violation.getMessage());
         assertEquals("content", violation.getPropertyPath().toString());
     }
 }
